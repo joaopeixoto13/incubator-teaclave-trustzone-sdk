@@ -28,6 +28,10 @@ edition = "2018"
 libc = "0.2.48"
 proto = { path = "../proto" }
 optee-teec = { path = "../../../optee-teec" }
+aes = "0.8.4"         # For AES block cipher
+cmac = "0.7.2"       # For CMAC
+aes-gcm = "0.10.3"    # For AES encryption (confidentiality)
+rand = "0.8.5"        # For generating random nonce
 
 [profile.release]
 lto = true

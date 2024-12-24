@@ -21,8 +21,8 @@
 use optee_utee::{
     ta_close_session, ta_create, ta_destroy, ta_invoke_command, ta_open_session, trace_println,
 };
-use optee_utee::{Error, ErrorKind, Parameters, Result};
-use proto::Command;
+use optee_utee::{Error, ErrorKind, Parameters, Result, ParamType};
+use proto::{Command, Pin, Passphrase};
 
 #[ta_create]
 fn create() -> Result<()> {
@@ -49,18 +49,41 @@ fn destroy() {
 #[ta_invoke_command]
 fn invoke_command(cmd_id: u32, params: &mut Parameters) -> Result<()> {
     trace_println!("[+] TA invoke command");
-    let mut values = unsafe { params.0.as_value().unwrap() };
     match Command::from(cmd_id) {
-        Command::IncValue => {
-            values.set_a(values.a() + 100);
-            Ok(())
-        }
-        Command::DecValue => {
-            values.set_a(values.a() - 100);
-            Ok(())
+        Command::CreateSeed => {
+            return create_seed(params);
         }
         _ => Err(Error::new(ErrorKind::BadParameters)),
     }
+}
+
+pub fn create_seed(params: &mut Parameters) -> Result<()> {
+    trace_println!("[+] Create Seed");
+
+    // Check if the parameters are correct 
+    let param_types = (ParamType::ValueInput as u32, ParamType::ValueInput as u32, ParamType::MemrefInput as u32, ParamType::MemrefOutput as u32);
+    if (params.0.param_type as u32, params.1.param_type as u32, params.2.param_type as u32, params.3.param_type as u32) != param_types {
+        return Err(Error::new(ErrorKind::BadParameters));
+    }
+
+    // Get Seed ID
+    let seed_id = unsafe {params.0.as_value().unwrap()};
+
+    // Get the PIN
+    let pin = unsafe {params.1.as_value().unwrap()};
+
+    // Get the passphrase
+    let mut passphrase = unsafe {params.2.as_memref().unwrap()};
+
+    // Get the mnemonic reference
+    let mut mnemonic = unsafe {params.3.as_memref().unwrap()};
+
+    // Print the values
+    trace_println!("[+] Seed ID: {:?}", seed_id.a());
+    trace_println!("[+] PIN: {:?}", pin.a());
+    trace_println!("[+] Passphrase: {:?}", passphrase.buffer());
+    
+    Ok(())
 }
 
 // TA configurations

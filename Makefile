@@ -73,7 +73,8 @@ install: examples
 	$(q)cp examples/*/host/target/$(TARGET_HOST)/release/*-rs ${out-dir}${bindir}
 	$(echo) '  INSTALL ${out-dir}${libdir}/tee-supplicant/plugins/'
 	$(q)mkdir -p ${out-dir}${libdir}/tee-supplicant/plugins/
-	$(q)find examples/*/plugin/target/$(TARGET_HOST)/ -name *.plugin.so -exec cp {} ${out-dir}${libdir}/tee-supplicant/plugins/ \;
+#	$(q)find examples/*/plugin/target/$(TARGET_HOST)/ -name *.plugin.so -exec cp {} ${out-dir}${libdir}/tee-supplicant/plugins/ \;
+	cp -rf ${out-dir}/* $(QEMU_SHARED_DIR)
 
 examples-clean: $(EXAMPLES_CLEAN) out-clean
 $(EXAMPLES_CLEAN):

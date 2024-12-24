@@ -18,8 +18,11 @@
 #![no_std]
 
 pub enum Command {
-    IncValue,
-    DecValue,
+    CreateSeed,
+    DeleteSeed,
+    CheckSeeds,
+    EditSeed,
+    ImportSeed,    
     Unknown,
 }
 
@@ -27,11 +30,18 @@ impl From<u32> for Command {
     #[inline]
     fn from(value: u32) -> Command {
         match value {
-            0 => Command::IncValue,
-            1 => Command::DecValue,
+            0 => Command::CreateSeed,
+            1 => Command::DeleteSeed,
+            2 => Command::CheckSeeds,
+            3 => Command::EditSeed,
+            4 => Command::ImportSeed,
             _ => Command::Unknown,
         }
     }
 }
+
+pub type Pin = u32;
+
+pub type Passphrase = &'static str;
 
 pub const UUID: &str = &include_str!(concat!(env!("OUT_DIR"), "/uuid.txt"));
